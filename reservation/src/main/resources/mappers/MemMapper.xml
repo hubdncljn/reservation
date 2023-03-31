@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="MemMapper">
+  	
+  	<!-- 등록 -->
+ 	<insert id="regist" parameterType="mvo">
+        insert into member(mno, name, phonenum) values (seq_member_mno.nextval, #{name}, #{phonenum})
+    </insert>
+    
+    <!-- 현재 회원 번호 조회 -->
+    <select id="getCurrMno" resultType="int">
+    	select seq_member_mno.currval from dual
+    </select>
+    
+    <!-- 회원 수정 -->
+    <update id="modify" parameterType="mrvo">
+    	update member set name=#{name}, phonenum=#{phonenum} where mno = #{mno}
+    </update>
+  </mapper>

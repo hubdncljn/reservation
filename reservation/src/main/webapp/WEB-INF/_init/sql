@@ -1,0 +1,44 @@
+-- 오라클 접속
+sqlplus
+sys /as sysdba
+oracle
+
+-- 유저 생성
+create user res identified by oracle;
+
+-- 권한 부여
+grant connect, resource, dba to res;
+
+-- 예약 테이블 생성
+create table res(
+    rno NUMBER(10),
+    mno NUMBER(10),
+    resdate varchar2(50) not null,
+    regdate date default sysdate,
+    constraint pk_res PRIMARY key(rno)
+);
+-- 시퀀스 생성
+create sequence seq_res_rno
+start with 1
+increment by 1
+nocycle nocache;
+
+
+-- 회원 테이블 생성
+create table member(
+    mno NUMBER(10),
+    name varchar2(50) not null,
+    phonenum varchar2(50) not null,
+    regdate date default sysdate
+    constraint pk_member PRIMARY key(mno)
+);
+
+alter table res
+add constraint fk_res_mno
+foreign key(mno) references member(mno);
+
+-- 시퀀스 생성
+create sequence seq_member_mno
+start with 1
+increment by 1
+nocycle nocache;

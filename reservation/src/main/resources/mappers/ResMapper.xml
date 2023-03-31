@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="ResMapper">
+
+  	<!--등록 -->
+ 	<insert id="regist" parameterType="rvo">
+        insert into res(rno, mno, resdate) values (seq_res_rno.nextval, #{mno}, #{resdate})
+    </insert>
+    
+    <!-- 목록 조회 -->
+    <select id="getList" resultType="mrvo">
+    	select r.rno, r.resdate, m.name, m.phonenum 
+    	from res r
+    	join member m
+    	on m.mno = r.mno
+    	where is_deleted = 'N'
+    	order by resdate
+    </select>
+    
+    <!-- 목록 조회(페이징) -->
+    <select id="getListPaging" parameterType="pgvo" resultType="mrvo">
+    	<![CDATA[
+	    	select rno, resdate, name, phonenum, mno from(
+	    		select rownum as rn, rno, resdate, mno, name, phonenum
+	    		from ( select r.rno, r.resdate, m.mno, m.name, m.phonenum
+		    			from res r join member m on m.mno = r.mno where is_deleted = 'N' 
+		    			order by resdate) where rownum <= #{pageNum} * #{amount})
+		        where rn > (#{pageNum} -1) * #{amount}
+    	]]>
+    </select>
+    
+    <!-- 예약 가능여부 조회 -->
+    <select id="checkDate" parameterType="String" resultType="int">
+    	select count(rno) from res where resdate = #{resdate} and is_deleted = 'N'
+    </select>
+    
+    <!-- 총 예약 수 -->
+    <select id="totalCount" resultType="int">
+    	select count(rno) from res where is_deleted = 'N'
+    </select>
+    
+    <!-- 상세 조회 -->
+    <select id="getDetail" parameterType="int" resultType="mrvo">
+    	select r.rno, r.resdate, m.name, m.phonenum , m.mno
+    	from res r
+    	join member m
+    	on m.mno = r.mno
+    	where r.rno = #{rno}
+    </select>
+    
+    <!-- 예약 취소 -->
+    <update id="delete" parameterType="int">
+    	update res set is_deleted='Y' where rno = #{rno}
+    </update>
+    
+    <!-- 예약 변경 -->
+    <update id="modify" parameterType="mrvo">
+    	update res set resdate=#{resdate} where rno = #{rno}
+    </update>
+  </mapper>
